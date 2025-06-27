@@ -41,4 +41,4 @@ def preprocessing_df(df, irrev_cols):
     # remove everything that isn't alphanumeric or a space
     df = keep_alpha_num(df)
     
-    print(df.iloc[0,:])
+    return df
