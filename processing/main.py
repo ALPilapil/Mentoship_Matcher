@@ -2,7 +2,12 @@ import numpy as np
 import pandas as pd
 from preprocess_df import preprocessing_df
 from partition import partition
+from scipy.spatial import distance
+from sentence_transformers import SentenceTransformer
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
+
+# comparison
 def get_similarity_cols(df, target_similarity_cols):
     original_cols = df.columns
     sim_cols = []
@@ -14,6 +19,66 @@ def get_similarity_cols(df, target_similarity_cols):
 
     return sim_cols
 
+def encode_attributes(text_attributes):
+    encoded_att = []
+    for x in text_attributes:
+        text = str(x)      # converts the int to a string
+        vec_att = model.encode([text])[0]
+        encoded_att.append(vec_att)
+
+    return encoded_att
+
+def get_similarities(encoded_one, encoded_two):
+    similarity_list = []
+
+    for x,y in zip(encoded_one, encoded_two):
+        similarity_score = 1-distance.cosine(x,y)
+        similarity_list.append(similarity_score)
+
+    return similarity_list
+
+def run_comparison(bigs_list, littles_list):
+    # temporary, reduce the list size just for ease and faster run time
+    bigs_list = bigs_list[:1]
+    littles_list = littles_list[:2]
+
+    # print(len(bigs_list[0].attributes))
+    # print(len(littles_list[0].attributes))
+
+    # for each big
+    #   encode each attribute 
+    #   get a little
+    #       run semantic similarity on the ith attribute of the big and the ith attribute of the little
+    #       save the ith score on the ith position in a list 
+    #       save the ith attribute which this is for, for interpretability. just do this as literally its index for now
+    #   get the next little
+
+    big_tuples = []
+
+    for big in bigs_list:
+        big_encoded = encode_attributes(big.attributes)
+        # a list to keep track of all the littles and their scores
+        little_tuples = []
+
+        for little in littles_list:
+            little_encoded = encode_attributes(little.attributes)
+            # run similarity on the ith of the big and the ith of the little
+            sim_scores = get_similarities(big_encoded, little_encoded)
+            abs_sim_scores = list(map(abs, sim_scores))
+            name_score_tuple = (little.name, abs_sim_scores)   # every tuple contains the name and a list of the sim scores
+            little_tuples.append(name_score_tuple)
+
+        # now you have a list of tuples, need to assign this list to the big via another tuple
+        big_tuple = (big.name, little_tuples)
+        big_tuples.append(big_tuple)
+
+    # print tests
+    print("the first big tuple: ", big_tuples[0])
+    print("big name: ", big_tuples[0][0])
+
+    # print(bigs_list[0].attributes)
+    # print(littles_list[0].attributes)
+
 def main():
     df = pd.read_csv('./data/winter_responses_25.csv')
     #print(read_winter.iloc[1,:]) how to access the whole 1st row
@@ -24,17 +89,25 @@ def main():
     # preprocess the data to remove unnecessary columns and format the text properly
     df = preprocessing_df(df, irrev_cols)
 
-    # define what columns to use semantic similarity on
-    target_similarity_cols = ["hobbies", "movies", "genres", "snacks", "hot take", "any other", "describe", "personality traits", "hoping to get", "anyting else"]
-    similarity_cols = get_similarity_cols(df, target_similarity_cols)
+    # define what columns to use semantic similarity on, may also have to prompt the user on these
+    names_target_cols = ["how comfort", "i wanna", "first, last", "how involved","hobbies/in", "movies", "genres", "snacks", 
+                              "hot take", "any other", "describe", "personality traits", "hoping to get", "anything else"]
+    target_cols = get_similarity_cols(df, names_target_cols)
+    # this contains both columns important for similarity as well as important attributes such as name
+
+    # filter the dataframe to make a copy which contains only the important columns
+    target_df = df[target_cols]
+    #print(target_df.columns)
 
     # get a list of bigs and a list of littles from the dataframe
-    bigs_list, littles_list = partition(df)
+    bigs_list, littles_list = partition(target_df)
 
-    # now compare every big against every little
+    # now compare every big against every little or vice versa
     # account for edge case of someone being in both categories
     # apply this only to the columns that matter
 
+    # this function should return the top 5 biggest matches along with a breakdown of each score for each category
+    comparison_scores = run_comparison(bigs_list, littles_list)
 
     # should be a 2 step processs for each person
     # 1. filter for bigs and littles
@@ -47,3 +120,7 @@ if __name__ == "__main__":
 
 #NOTE
 # column of rows and littles should be called littles, defined right now as "littos" to match the spreadsheet
+# remember that we get the column index for role based on the first person and the fact that big, little, or both doesn't appear before the cell which contains
+# that person's desired role. 
+# - need to make this clear to the user to avoid errors
+# attributes no longer contain names or role

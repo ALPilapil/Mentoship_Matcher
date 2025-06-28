@@ -9,9 +9,7 @@ def get_name_col(df):
     for label in df.columns:
         name_col_index += 1
         if "name" in label:
-            break
-
-    return name_col_index
+            return name_col_index
 
 def get_role_col(df):
     role_col_index = 0
@@ -34,7 +32,15 @@ def become_people(df):
     # turns every row into a person with a name and a list of attributes that you get from the columns
     people = []
     for row in df.itertuples():
-        people.append(Person(row[name_col_index], row[role_col_index], row))
+        row_list = list(row)[1:] # convert the row into a list
+        
+        name = row[name_col_index]
+        role = row[role_col_index]
+        # get row without these features
+        row_list.remove(name)
+        row_list.remove(role)
+
+        people.append(Person(name, role, row_list))
     
     return people
         
