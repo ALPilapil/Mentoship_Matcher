@@ -3,8 +3,6 @@ from preprocess_df import preprocessing_df
 from partition import partition
 from comparison import get_similarity_cols, run_comparison, score_sort
 
-
-
 def main():
     df = pd.read_csv('./data/winter_responses_25.csv')
     #print(read_winter.iloc[1,:]) how to access the whole 1st row
@@ -28,29 +26,25 @@ def main():
     # get a list of bigs and a list of littles from the dataframe
     bigs_list, littles_list = partition(target_df)
 
-    # now compare every big against every little or vice versa
-    # account for edge case of someone being in both categories
-    # apply this only to the columns that matter
+    # now compare every big against every little
 
     # this function should return the top 5 biggest matches along with a breakdown of each score for each category
     comparison_scores = run_comparison(bigs_list, littles_list)
-
-    score_sort(comparison_scores)
+    # sorts the littles for each big in accordance to their average similarity score
+    score_sort(comparison_scores)           
+    
+                          
 
     for big in comparison_scores:
         print("big: ", big, "\n")
         print("--------------------------------------")
-
-    # should be a 2 step processs for each person
-    # 1. filter for bigs and littles
-    # 2. apply semantic similarity on the remaining choices
 
 
 if __name__ == "__main__":
     main()
 
 
-#NOTE
+# NOTE: 
 # column of rows and littles should be called littles, defined right now as "littos" to match the spreadsheet
 # remember that we get the column index for role based on the first person and the fact that big, little, or both doesn't appear before the cell which contains
 # that person's desired role. 
