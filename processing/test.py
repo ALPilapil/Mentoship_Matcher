@@ -8,13 +8,12 @@ from sentence_transformers import SentenceTransformer
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Sample sentence
-sentences = ["The movie is awesome. It was a good thriller",
-             "We are learning NLP throughg GeeksforGeeks",
-             "The baby learned to walk in the 5th month itself"]
+sentences = ["The movie is awesome. It was a good thriller. That person looks really weird. I like to eat pizza for dinner. I also really enjoy cooking.",
+            ]
 
 # numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
-test = "I liked the movie."
+test = "I like to eat pizza and cook. Here is a random irrelevant sentence. Fishing is great in Michigan"
 print('Test sentence:',test)
 test_vec = model.encode([test])[0]
 
