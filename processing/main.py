@@ -3,6 +3,8 @@ from preprocess_df import preprocessing_df
 from partition import partition
 from comparison import get_similarity_cols, run_comparison, score_sort
 
+# test
+
 def main():
     df = pd.read_csv('./data/winter_responses_25.csv')
     #print(read_winter.iloc[1,:]) how to access the whole 1st row
