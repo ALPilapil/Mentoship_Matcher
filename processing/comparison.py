@@ -34,6 +34,13 @@ def get_similarities(encoded_one, encoded_two):
 
     return similarity_list
 
+def calculate_total_score(sim_array):
+    # need to get the length of the array of total scores
+    # then make a list of weights of equal weights
+    # then prompt the user for values for these weights
+    # get a dot product (weights, scores)
+
+    return 
 
 def run_comparison(bigs_list, littles_list):
     # temporary, reduce the list size just for ease and faster run time

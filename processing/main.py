@@ -33,7 +33,9 @@ def main():
     # this function should return the top 5 biggest matches along with a breakdown of each score for each category
     comparison_scores = run_comparison(bigs_list, littles_list)
     # sorts the littles for each big in accordance to their average similarity score
-    score_sort(comparison_scores)           
+    score_sort(comparison_scores) 
+
+
     
                           
 
@@ -45,6 +47,8 @@ def main():
 if __name__ == "__main__":
     main()
 
+
+# TODO: finish the dot product code in comparison.py
 
 # NOTE: 
 # column of rows and littles should be called littles, defined right now as "littos" to match the spreadsheet
