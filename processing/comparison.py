@@ -40,7 +40,32 @@ def calculate_total_score(sim_array):
     # then prompt the user for values for these weights
     # get a dot product (weights, scores)
 
-    return 
+    n = len(sim_array)
+    if n == 0:
+        return 0.0
+
+    # 1. create default equal weights
+    default_weight = 1.0 / n
+    weights = [default_weight] * n
+
+    # 2. prompt user for weights (or press Enter to keep defaults)
+    prompt = (
+        f"Enter {n} weights separated by spaces (press Enter to use equal weights {weights}): "
+    )
+    user_input = input(prompt).strip()
+
+    if user_input:
+        try:
+            user_weights = list(map(float, user_input.split()))
+            if len(user_weights) != n:
+                raise ValueError(f"Expected {n} weights, got {len(user_weights)}")
+            weights = user_weights
+        except ValueError as e:
+            print(f"Invalid input ({e}), using default weights {weights}.")
+
+    # 3. compute dot product
+    total_score = sum(w * s for w, s in zip(weights, sim_array))
+    return total_score 
 
 def run_comparison(bigs_list, littles_list):
     # temporary, reduce the list size just for ease and faster run time
@@ -66,9 +91,11 @@ def run_comparison(bigs_list, littles_list):
             little_encoded = encode_attributes(little.attributes)
             # run similarity on the ith of the big and the ith of the little
             sim_scores = get_similarities(big_encoded, little_encoded)
-            abs_sim_scores = list(map(abs, sim_scores))
-            total_score = np.array(abs_sim_scores).mean()                   # toy with this to get different results, mean, sum, etc. 
-            name_score_tuple = (little.name, abs_sim_scores, total_score)   # every tuple contains the name and a list of the sim scores
+            relu_sim_scores = list(map(lambda x: max(0, x), sim_scores))     # applying relu to all the similarity scores
+            
+            # edit this to not be the mean
+            total_score = calculate_total_score(relu_sim_scores)                   # toy with this to get different results, mean, sum, etc. 
+            name_score_tuple = (little.name, relu_sim_scores, total_score)   # every tuple contains the name and a list of the sim scores
             little_tuples.append(name_score_tuple)
 
         # now you have a list of tuples, need to assign this list to the big via another tuple

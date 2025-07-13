@@ -34,8 +34,6 @@ def main():
     comparison_scores = run_comparison(bigs_list, littles_list)
     # sorts the littles for each big in accordance to their average similarity score
     score_sort(comparison_scores) 
-
-
     
                           
 
