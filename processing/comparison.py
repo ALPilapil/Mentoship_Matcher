@@ -34,7 +34,7 @@ def get_similarities(encoded_one, encoded_two):
 
     return similarity_list
 
-def calculate_total_score(sim_array):
+def get_weights(sim_array):
     # need to get the length of the array of total scores
     # then make a list of weights of equal weights
     # then prompt the user for values for these weights
@@ -63,24 +63,26 @@ def calculate_total_score(sim_array):
         except ValueError as e:
             print(f"Invalid input ({e}), using default weights {weights}.")
 
-    # 3. compute dot product
-    total_score = sum(w * s for w, s in zip(weights, sim_array))
-    return total_score 
+    return weights
 
 def run_comparison(bigs_list, littles_list):
+    """
+    for each big
+      encode each attribute 
+      get a little
+          run semantic similarity on the ith attribute of the big and the ith attribute of the little
+          save the ith score on the ith position in a list 
+          save the ith attribute which this is for, for interpretability. just do this as literally its index for now
+      get the next little
+    """
     # temporary, reduce the list size just for ease and faster run time
     bigs_list = bigs_list[:2]
     littles_list = littles_list[:3]
 
-    # for each big
-    #   encode each attribute 
-    #   get a little
-    #       run semantic similarity on the ith attribute of the big and the ith attribute of the little
-    #       save the ith score on the ith position in a list 
-    #       save the ith attribute which this is for, for interpretability. just do this as literally its index for now
-    #   get the next little
-
     matched_tuples = []
+
+    # get weights by asking the user for them
+    weights = get_weights(bigs_list[0].attributes)
 
     for big in bigs_list:
         big_encoded = encode_attributes(big.attributes)
@@ -94,7 +96,7 @@ def run_comparison(bigs_list, littles_list):
             relu_sim_scores = list(map(lambda x: max(0, x), sim_scores))     # applying relu to all the similarity scores
             
             # edit this to not be the mean
-            total_score = calculate_total_score(relu_sim_scores)                   # toy with this to get different results, mean, sum, etc. 
+            total_score = sum(w * s for w, s in zip(weights, relu_sim_scores))        # this is a dot product 
             name_score_tuple = (little.name, relu_sim_scores, total_score)   # every tuple contains the name and a list of the sim scores
             little_tuples.append(name_score_tuple)
 
