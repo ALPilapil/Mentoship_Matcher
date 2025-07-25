@@ -50,7 +50,8 @@ def get_weights(sim_array):
 
     # 2. prompt user for weights (or press Enter to keep defaults)
     prompt = (
-        f"Enter {n} weights separated by spaces (press Enter to use equal weights {weights}): "
+        f"Weights correspond with these, in order: {sim_array}"
+        f"Enter {n} weights separated by spaces (press Enter to use equal weights): "
     )
     user_input = input(prompt).strip()
 
@@ -65,7 +66,7 @@ def get_weights(sim_array):
 
     return weights
 
-def run_comparison(bigs_list, littles_list):
+def run_comparison(bigs_list, littles_list, weights):
     """
     for each big
       encode each attribute 
@@ -80,9 +81,6 @@ def run_comparison(bigs_list, littles_list):
     littles_list = littles_list[:3]
 
     matched_tuples = []
-
-    # get weights by asking the user for them
-    weights = get_weights(bigs_list[0].attributes)
 
     for big in bigs_list:
         big_encoded = encode_attributes(big.attributes)
