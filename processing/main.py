@@ -2,7 +2,6 @@ import pandas as pd
 from preprocess_df import preprocessing_df
 from partition import partition
 from comparison import get_similarity_cols, run_comparison, score_sort, get_weights
-import csv 
 
 def format_final(comparison_scores, precision, top_N=3):
     """
@@ -49,7 +48,7 @@ def format_final(comparison_scores, precision, top_N=3):
     return detailed_df, base_df
 
 
-def main(input_df, name_col_label, role_col_label, topN, precision, weights):
+def main(input_df, topN, precision, weights):
     """
     simply put, takes a csv of the bigs and littles and outputs a csv of those that match best
     inputs:
@@ -83,8 +82,6 @@ def main(input_df, name_col_label, role_col_label, topN, precision, weights):
     target_df = df[target_cols]
 
     # get the weights here in main 
-    print("The bigger the value to each corresponding attribute the more it the algorithm will value it")
-
     
     # get a list of bigs and a list of littles from the dataframe
     bigs_list, littles_list = partition(target_df)
@@ -100,8 +97,10 @@ def main(input_df, name_col_label, role_col_label, topN, precision, weights):
     detailed_df, base_df = format_final(comparison_scores, precision=precision, top_N=topN)
 
     print(detailed_df)
-    print("------------------------")
+    print("---------------------")
     print(base_df)
+
+    return detailed_df, base_df
 
 
 if __name__ == "__main__":
@@ -118,4 +117,4 @@ if __name__ == "__main__":
     cols_no_names_roles.remove(role_col_label)
     weights = get_weights(cols_no_names_roles)
 
-    main(input_df, name_col_label, role_col_label, topN, precision, weights)
+    main(input_df, topN, precision, weights)

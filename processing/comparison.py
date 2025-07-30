@@ -77,10 +77,19 @@ def run_comparison(bigs_list, littles_list, weights):
       get the next little
     """
     # temporary, reduce the list size just for ease and faster run time
-    bigs_list = bigs_list[:2]
-    littles_list = littles_list[:3]
+    bigs_list = bigs_list
+    littles_list = littles_list
 
     matched_tuples = []
+
+    weights_np = np.array(list(weights), dtype=float)
+
+    for little in littles_list:
+        little.encoded = encode_attributes(little.attributes)
+
+        # remove a duplicate value, not sure how it's here
+        little.attributes.pop(9)
+        little.encoded.pop(9)
 
     for big in bigs_list:
         big_encoded = encode_attributes(big.attributes)
@@ -88,13 +97,11 @@ def run_comparison(bigs_list, littles_list, weights):
         little_tuples = []
 
         for little in littles_list:
-            little_encoded = encode_attributes(little.attributes)
             # run similarity on the ith of the big and the ith of the little
-            sim_scores = get_similarities(big_encoded, little_encoded)
-            relu_sim_scores = list(map(lambda x: max(0, x), sim_scores))     # applying relu to all the similarity scores
+            sim_scores = np.array(get_similarities(big_encoded, little.encoded))
+            relu_sim_scores = np.maximum(sim_scores, 0)     # applying relu to all the similarity scores
             
-            # edit this to not be the mean
-            total_score = sum(w * s for w, s in zip(weights, relu_sim_scores))        # this is a dot product 
+            total_score = float(weights_np.dot(relu_sim_scores))        # this is a dot product 
             name_score_tuple = (little.name, relu_sim_scores, total_score)   # every tuple contains the name and a list of the sim scores
             little_tuples.append(name_score_tuple)
 

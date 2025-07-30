@@ -3,6 +3,7 @@ class Person:
         self.name = name
         self.attributes = attributes
         self.role = role
+        self.encoded = None
 
 def get_name_col(df):
     name_col_index = 0

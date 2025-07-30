@@ -30,27 +30,40 @@ for col in feature_cols:
                                    min_value=0.0,
                                    value=1.0,
                                    step=0.1)
+    
+weights_array = weights.values()
+    
 
 # 2️ run your matching logic, passing those weights in
-detailed_df, base_df = main.main(
-    df,
-    name_col_label=name_col_label,
-    role_col_label=role_col_label,
-    topN=topN,
-    precision=precision,
-    weights=weights,         
-)
+if st.button("press to run calculation"):
+    st.write("This may take a bit")
+    detailed_df, base_df = main.main(
+        df,
+        topN=topN,
+        precision=precision,
+        weights=weights_array,         
+    )
 
-st.subheader("Detailed Matches")
-st.dataframe(detailed_df)
+    st.subheader("Detailed Matches")
+    st.dataframe(detailed_df)
 
-st.subheader("Base Matches")
-st.dataframe(base_df)
+    detailed_csv = detailed_df.to_csv(index=False).encode("utf-8")
+    st.download_button(
+        label="Download detailed matches CSV",
+        key=1,
+        data=detailed_csv,
+        file_name="matches_base.csv",
+        mime="text/csv",
+    )
 
-csv = base_df.to_csv(index=False).encode("utf-8")
-st.download_button(
-    label="Download base matches CSV",
-    data=csv,
-    file_name="matches_base.csv",
-    mime="text/csv",
-)
+    st.subheader("Base Matches")
+    st.dataframe(base_df)
+
+    base_csv = base_df.to_csv(index=False).encode("utf-8")
+    st.download_button(
+        label="Download base matches CSV",
+        key=2,
+        data=base_csv,
+        file_name="matches_base.csv",
+        mime="text/csv",
+    )
