@@ -66,7 +66,8 @@ if st.button("press to run calculation"):
         df,
         topN=topN,
         precision=precision,
-        weights=weights_array,         
+        weights=weights_array,
+        role_col_name=role_col_label,         
     )
 
     st.subheader("Detailed Matches")

@@ -48,7 +48,7 @@ def format_final(comparison_scores, precision, top_N=3):
     return detailed_df, base_df
 
 
-def main(input_df, topN, precision, weights):
+def main(input_df, topN, precision, weights, role_col_name):
     """
     simply put, takes a csv of the bigs and littles and outputs a csv of those that match best
     inputs:
@@ -84,7 +84,7 @@ def main(input_df, topN, precision, weights):
     # get the weights here in main 
     
     # get a list of bigs and a list of littles from the dataframe
-    bigs_list, littles_list = partition(target_df)
+    bigs_list, littles_list = partition(target_df, role_col_name)
 
     # now compare every big against every little
     # this function should return the top 5 biggest matches along with a breakdown of each score for each category
@@ -117,4 +117,4 @@ if __name__ == "__main__":
     cols_no_names_roles.remove(role_col_label)
     weights = get_weights(cols_no_names_roles)
 
-    main(input_df, topN, precision, weights)
+    main(input_df, topN, precision, weights, role_col_label)

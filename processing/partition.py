@@ -12,23 +12,15 @@ def get_name_col(df):
         if "name" in label:
             return name_col_index
 
-def get_role_col(df):
-    role_col_index = 0
-    for cell in df.iloc[0,:]:
-        role_col_index += 1
-        if not isinstance(cell, str):
-            continue
-        elif ("big" in cell) or ("litto" in cell) or ("both" in cell):
-            break
 
-    return role_col_index
+def become_people(df, role_col_name):
 
-def become_people(df):
     # get the index of the name column
     name_col_index = get_name_col(df)
 
     # get the index of the big/little column
-    role_col_index = get_role_col(df)
+    columns = list(df.columns)
+    role_col_index = columns.index(role_col_name)+1
 
     # turns every row into a person with a name and a list of attributes that you get from the columns
     people = []
@@ -37,6 +29,7 @@ def become_people(df):
         
         name = row[name_col_index]
         role = row[role_col_index]
+        print("role: ", role)
         # get row without these features
         row_list.remove(name)
         row_list.remove(role)
@@ -44,23 +37,44 @@ def become_people(df):
         people.append(Person(name, role, row_list))
     
     return people
+
+def get_roles(role_column):
+    roles = []
+
+    for role in list(role_column):
+        if role == "both":
+            continue
+        roles.append(role)
+    
+    unique_roles = list(set(roles))
+
+    role1 = unique_roles[0]
+    role2 = unique_roles[1]
+    role3 = "both"
+
+    return role1, role2, role3
         
 
-def partition(df):
+def partition(df, role_col_name):
     # this code should take in the preprocessed data frame and partition that into bigs and littles
     bigs_list = []
     littles_list = []
+    role_col_name = role_col_name.lower()
 
     # initialize every row as a person with certain attributes to get a list of people
-    everyone_list = become_people(df)
+    everyone_list = become_people(df, role_col_name)
+
+    # get the available roles
+    big, little, both = get_roles(df[role_col_name])
+    print(f"big: {big}     little: {little}     both: {both}")
 
     # seperate into lists
     for person in everyone_list:
-        if person.role == 'big':
+        if person.role == big:
             bigs_list.append(person)
-        elif person.role == 'litto':
+        elif person.role == little:
             littles_list.append(person)
-        elif person.role == 'both':
+        elif person.role == both:
             bigs_list.append(person)
             littles_list.append(person)
         else:
