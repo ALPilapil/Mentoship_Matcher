@@ -64,7 +64,6 @@ if st.button("press to run calculation"):
     st.write("This may take a bit")
     detailed_df, base_df = main.main(
         df,
-        key=3,
         topN=topN,
         precision=precision,
         weights=weights_array,         
